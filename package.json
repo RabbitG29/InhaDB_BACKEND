@@ -1,0 +1,18 @@
+{
+  "name": "inha",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "http": "0.0.0",
+    "mysql": "^2.16.0",
+    "vue": "^2.5.17"
+  },
+  "devDependencies": {},
+  "description": ""
+}
