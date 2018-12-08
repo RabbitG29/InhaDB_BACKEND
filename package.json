@@ -8,10 +8,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.16.4",
+    "hoek": "^6.1.2",
     "http": "0.0.0",
     "mysql": "^2.16.0",
-    "vue": "^2.5.17"
+    "reqeust": "^2.81.1",
+    "request": "^2.88.0",
+    "vue": "^2.5.18"
   },
   "devDependencies": {},
   "description": ""

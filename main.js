@@ -4,17 +4,16 @@ const port="3001"
 const express = require("express");
 const app = express();
 const http = require("http");
+const cors = require('cors');
 const mysql = require("mysql");
-const con = mysql.createConnection({
-	host: "localhost",
-	user: "root",
-	password: "todtod2018",
-	database: "inha"
-});
+const con = require('./connection.js'); 
 con.connect(function(err) {
 	if(err) throw err;
 	console.log('정상적으로 MYSQL에 연결되었음');
 });
+//Routers
+const loginRouter = require('./routes/login');
+app.use(cors());
 app.use(express.static('static'));
 app.get("/",function(req, res) {
 	console.log("home");
@@ -24,3 +23,5 @@ app.get("/",function(req, res) {
 const server = app.listen(port, hostname, () => {
 	console.log(`Server running at http://${hostname}:${port}/`);
 });
+//using router
+app.use('/login', loginRouter);
