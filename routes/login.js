@@ -4,16 +4,19 @@ const router = express.Router();
 
 router.get("/", function(req, res, next) {
 	console.log("login");
-	//TODO : login
 	var id = req.query.id,
 	    password = req.query.password;
-	var sql = 'select password from Test where id=?';
+	// token 발급 안하고 단순하게 처리
+	var sql = 'select 비밀번호 from 학생 where 학번=?';
 	con.query(sql, id, function(err, result, fields) {
-		if(err) throw err;
-		if(result[0].password==password) { // login 성공
+		if(result==null) {
+			res.send({status: "error"});
+		}
+		if(err) throw err; // error 발생
+		if(result[0].비밀번호==password) { // login 성공
 			res.send({status: "success"});
 		}
-		else {
+		else { // login  실패
 			res.send({status: "error"});
 		}
 	});
