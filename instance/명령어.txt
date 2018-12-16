@@ -1,0 +1,15 @@
+load data local infile '/root/express/instance/학생.txt' into table inha.학생 fields terminated by '\t';
+
+load data local infile '/root/express/instance/이력.txt' into table inha.이력 fields terminated by '\t';
+
+load data local infile '/root/express/instance/선거정보.txt' into table inha.선거정보 fields terminated by '\t';
+
+load data local infile '/root/express/instance/선관위.txt' into table inha.선관위 fields terminated by '\t';
+
+load data local infile '/root/express/instance/후보.txt' into table inha.후보 fields terminated by '\t';
+
+load data local infile '/root/express/instance/당선후보.txt' into table inha.당선후보 fields terminated by '\t';
+
+load data local infile '/root/express/instance/공약.txt' into table inha.공약 fields terminated by '\t';
+
+load data local infile '/root/express/instance/게시판.txt' into table inha.게시판 fields terminated by '\t';

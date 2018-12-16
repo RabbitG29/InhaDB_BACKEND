@@ -4,29 +4,16 @@ const moment = require('moment');
 const router = express.Router();
 router.get("/:postid", function(req, res, nex) {
 	console.log("comment");
-	con.query("select * from 학생;", (err, mresult, fields)=>{
-		var postid = req.params.postid;
-		var m = JSON.parse(JSON.stringify(mresult))
+	var postid = req.params.postid;
 
-		var sql = 'select * from 게시글댓글 where 게시글번호=?';
-		con.query(sql,postid,function(err,result,fields) {
-			if(err) throw err;
-			else {
-				var r = JSON.parse(JSON.stringify(result));
-				for(var i=0;i<r.length;i++) {
-					for(var j=0;j<m.length;j++) {
-						if(m[j].학번==r[i].학번) {
-							r[i].이름 = m[j].이름;
-							break;
-						}
-					}
-				}
-				console.log(r);
-				res.send({
-					status: "success",
-					result: JSON.stringify(r)});
-			}
-		});
+	var sql = 'select 댓글번호, 댓글작성일시, 댓글내용, 게시글댓글.학번, 학생.이름 from 게시글댓글,학생 where 게시글번호=? AND 게시글댓글.학번=학생.학번';
+	con.query(sql,postid,function(err,result,fields) {
+		if(err) throw err;
+		else {
+			res.send({
+				status: "success",
+				result: JSON.stringify(result)});
+		}
 	});
 });
 //등록

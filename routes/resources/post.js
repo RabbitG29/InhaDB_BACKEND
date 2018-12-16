@@ -7,56 +7,33 @@ const moment = require('moment');
 router.get("/:boardid", function(req, res, next) {
 	var boardid = req.params.boardid;
 	console.log("read board"+boardid);
-	con.query("select * from 학생", (err,mresult,fields)=>{
-		var m = JSON.parse(JSON.stringify(mresult));
-		con.query("SELECT * FROM 게시글 WHERE 게시판번호 = ? ORDER BY 게시글작성일시 DESC", boardid, function(err, result, fields) {
-			if(err) res.send({ status: "error" });
-			else {
-				console.log(boardid);
-				console.log(result);
-				var r = JSON.parse(JSON.stringify(result));
-				for(var i=0;i<r.length;i++) {
-					for(var j=0;j<m.length;j++) {
-						if(m[j].학번==r[i].학번) {
-							r[i].이름=m[j].이름;
-							break;
-						}
-					}
-				}
-				res.send({
-					status: "success",
-					result: JSON.stringify(r)
-				});
-			}
-		});
+	var sql = "SELECT 게시글번호, 게시글작성일시, 게시글.학번, 게시판번호, 게시글제목, 학생.이름  FROM 게시글,학생  WHERE 게시판번호 = ? AND 게시글.학번=학생.학번 ORDER BY 게시글작성일시 DESC";
+	con.query(sql,boardid,function(err,result,fields) {
+		if(err) throw err;
+		else {
+			console.log(result);
+			res.send({
+				status: "success",
+				result: JSON.stringify(result)
+			});
+		}
 	});
 });
 
 // 게시글 조회
 router.get("/content/:postid", function(req, res, next) {
 	console.log("post read");
-	con.query("select * from 학생",(err,mresult,fields)=>{
-		var postId = req.params.postid;
-		var m = JSON.parse(JSON.stringify(mresult));
-		con.query("SELECT * FROM 게시글 WHERE 게시글번호 = ?", postId, function(err, result, fields) {
-			if(err) throw err;
-			else {
-				var r = JSON.parse(JSON.stringify(result));
-				for(var i=0;i<r.length;i++) {
-					for(var j=0;j<m.length;j++) {
-						if(m[j].학번==r[i].학번) {
-							r[i].이름=m[j].이름;
-							break;
-						}
-					}
-				}
-				console.log(r);
-				res.send({
-					status: "success",
-					result: JSON.stringify(r)
-				});
-			}
-		});
+	var postid = req.params.postid;
+	var sql = "SELECT 게시글번호, 게시글작성일시, 게시글내용, 게시글.학번, 게시판번호, 게시글제목, 학생.이름  FROM 게시글,학생  WHERE 게시글번호 = ? AND 게시글.학번=학생.학번 ORDER BY 게시글작성일시 DESC";
+	con.query(sql,postid,function(err,result,fields) {
+		if(err) throw err;
+		else {
+			console.log(result);
+			res.send({
+				status: "success",
+				result: JSON.stringify(result)
+			});
+		}
 	});
 });
 
