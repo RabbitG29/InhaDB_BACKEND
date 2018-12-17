@@ -6,13 +6,32 @@
     <br>
     <h2>후보 공약들...</h2>
     <div>
-      <div v-for="item in list" id="card-candidate">
-        <div class="card" v-for="item in list">
+      <div id="card-candidate">
+        <div class="card">
           <div class="card-body">
-            <h5 class="card-title">{{item.기호}}</h5>
-            <h6 class="card-subtitle" style="color: #5cb85c">{{item.정후보이름}} {{item.부후보이름}}</h6>
-            <p class="card-text">{{item.공약번호}}</p>
-            <p class="card-text">{{item.공약내용}}</p>
+            <h5 class="card-title">기호 {{list[0].기호}}번</h5>
+            <h6 class="card-subtitle" style="color: #5cb85c">{{list[0].정후보이름}} {{list[0].부후보이름}}</h6>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-subtitle" style="color: #5cb85c"> {{list[0].정후보이름}} 후보 이력</h6>
+            <br>
+            <div v-for="item2 in list2" v-if="list[0].정후보==item2.학번" class="card_text">
+              <p>{{item2.이력번호}}. {{item2.연도}} {{item2.이력내용}}</p>
+            </div>
+            <h6> {{list[0].부후보이름}} 후보 이력 </h6>
+            <div v-for="item2 in list2" v-if="list[0].부후보==item2.학번" class="card_text">
+              <p>{{item2.이력번호}}. {{item2.연도}} {{item2.이력내용}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h5> 공약 </h5>
+            <div v-for="item in list" class="card-text">
+              <p>{{item.공약번호}}. {{item.공약내용}}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -35,7 +54,8 @@ export default {
   },
   mounted: function() {
     this.msg=''
-    this.vote_num=this.$route.query.선거회차
+    this.vote_num=this.$route.params.vote_num
+    this.candi_num=this.$route.params.candi_num
     console.log('현재 선거회차 : ' + this.vote_num)
     console.log('기호 : ' + this.candi_num)
     this.getData()
@@ -43,6 +63,8 @@ export default {
   watch: {
     $route: function(to, from) {
       this.msg=''
+      this.vote_num=this.$route.params.vote_num
+      this.candi_num=this.$route.params.candi_num
       console.log('현재 선거회차 : ' + this.vote_num)
       console.log('기호 : ' + this.candi_num)
       this.getData()
@@ -50,20 +72,22 @@ export default {
   },
   methods: {
     getData: function() {
-      var url = this.$config.targetURL+'/vote/candInfo/'+this.vote_num+"/"+this.candi_num;
+      var url = this.$config.targetURL+'/vote/candInfo/'+this.vote_num+'/'+this.candi_num;
       console.log(url)
       this.$http.get(url)
       .then(result=> {
         console.log(result)
         console.log(result.data.status)
-        this.list = result.data.data
+        this.list = result.data.result1
+        this.list2 = result.data.result2
         console.log(this.list)
+        console.log(this.list2)
       })
       .catch(error=> {
         console.log('서버에러')
       })
     }
-   }
+  }
 }
 </script>
 
