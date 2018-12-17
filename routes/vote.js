@@ -34,6 +34,21 @@ router.get("/info/:voteid", function(req, res, next) {
 		}
 	});
 });
+//투표 결과 조회
+router.get("/result/:voteid", function(req,res,next) {
+	var voteid = req.params.voteid;
+	var sql = "select distinct 정.기호, 정.선거회차, 정. 정후보이름, 부.부후보이름, 득표수, 득표율 from (select 기호, 정후보, 부후보, 선거회차, 학생.이름 AS 정후보이름 from 후보, 학생 where 후보.정후보=학생.학번) AS 정 JOIN ( select 기호, 정후보, 부후보, 선거회차, 학생.이름 AS 부후보이름 from 후보, 학생 where 후보.부후보=학생.학번) AS 부 ON 정.기호=부.기호 AND 정.선거회차 = 부.선거회차, 후보, 득표정보 where 정.선거회차=? and (정.기호=득표정보.기호 and 정.선거회차 =득표정보.선거회차)";
+	con.query(sql,voteid,function(err,result,fields) {
+		if(err) throw err;
+		else {
+			console.log(result);
+			res.send({
+				status: "success",
+				result: JSON.stringify(result)
+			});
+		}
+	});
+});
 //실제 투표 진행
 router.put("/", function(req, res, next) {
 	console.log(req.body);

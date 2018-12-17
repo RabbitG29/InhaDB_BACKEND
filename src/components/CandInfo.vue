@@ -1,12 +1,15 @@
 <template>
   <div>
   <div class="container">
-    <h1>Candidate</h1>
-    <h2>후보 이름들 및 정보...</h2>
-    <br>
-    <h2>후보 공약들...</h2>
+    <h1>후보자정보</h1>
+    <a href="#" class="btn btn-secondary" style="float:right cursor: pointer" @click="goBack">뒤로가기</a>
     <div>
       <div id="card-candidate">
+        <div class="row form-group">
+          <div class="col-sm-10"></div>
+          <div class="col-sm-2" >
+          </div>
+        </div>
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">기호 {{list[0].기호}}번</h5>
@@ -15,12 +18,13 @@
         </div>
         <div class="card">
           <div class="card-body">
-            <h6 class="card-subtitle" style="color: #5cb85c"> {{list[0].정후보이름}} 후보 이력</h6>
-            <br>
+            <h6 class="card-subtitle" style="color: #5cb85c"> {{list[0].정후보이름}} 후보 이력</h6> <br>
             <div v-for="item2 in list2" v-if="list[0].정후보==item2.학번" class="card_text">
               <p>{{item2.이력번호}}. {{item2.연도}} {{item2.이력내용}}</p>
             </div>
-            <h6> {{list[0].부후보이름}} 후보 이력 </h6>
+          </div>
+          <div class="card-body">
+            <h6 class="card-subtitle" style="color: #5cb85c"> {{list[0].부후보이름}} 후보 이력 </h6> <br>
             <div v-for="item2 in list2" v-if="list[0].부후보==item2.학번" class="card_text">
               <p>{{item2.이력번호}}. {{item2.연도}} {{item2.이력내용}}</p>
             </div>
@@ -28,7 +32,7 @@
         </div>
         <div class="card">
           <div class="card-body">
-            <h5> 공약 </h5>
+            <h5 class="card-subtitle" style="color: #5cb85c"> 공약 </h5> <br>
             <div v-for="item in list" class="card-text">
               <p>{{item.공약번호}}. {{item.공약내용}}</p>
             </div>
@@ -86,6 +90,9 @@ export default {
       .catch(error=> {
         console.log('서버에러')
       })
+    },
+    goBack: function(){
+      this.$router.go(-1)
     }
   }
 }
