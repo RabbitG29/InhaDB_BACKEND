@@ -18,6 +18,7 @@ con.connect(function(err) {
 const loginRouter = require('./routes/login');
 const resourcesRouter = require('./routes/resources');
 const voteRouter = require('./routes/vote');
+const ecpageRouter = require('./routes/ecpage');
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('static'));
@@ -33,3 +34,4 @@ const server = app.listen(port, hostname, () => {
 app.use('/login', loginRouter);
 app.use('/resources', resourcesRouter);
 app.use('/vote', voteRouter);
+app.use('/ecpage', ecpageRouter);

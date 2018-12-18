@@ -49,13 +49,33 @@ router.get("/result/:voteid", function(req,res,next) {
 		}
 	});
 });
+//투표 여부 조회
+router.get("/verify/:voteid/:id", function(req,res,next) {
+	console.log("verify");
+	var voteid = req.params.voteid,
+	id = req.params.id;
+	var params = [voteid, id];
+	var sql = "select 투표여부 from 학생투표참여 where 선거회차=? AND 학번=?";
+	con.query(sql,params,function(err, result, fields) {
+		if(err) throw err;
+		else {
+			console.log(result);
+			res.send({
+				status: "success",
+				result: result[0].투표여부
+			});
+		}
+	});
+});
 //실제 투표 진행
 router.put("/", function(req, res, next) {
 	console.log(req.body);
 	console.log(req.body.information);
 	var information = req.body;
 	var voteid = information.voteid,
-	candid = information.candid;
+	candid = information.candid,
+	stuid = information.stuid;
+	console.log(stuid);
 	console.log("투표 for "+candid+" of "+voteid);
 	var params = [voteid, candid];
 	var sql = 'update 득표정보 set 득표수=득표수+1 where 선거회차=? and 기호=?'; // 후보자 득표수 계산
@@ -63,6 +83,7 @@ router.put("/", function(req, res, next) {
 	var sql3 = 'select 투표수, COUNT(학번) AS 학생수  from 선거정보, 학생 where 선거회차=?'; // 투표수 증가 후의 투표수 및 학생수  받아옴
 	var sql4 = 'update 득표정보 set 득표율=득표수/? where 선거회차=? and 기호=?'; // 후보의 득표율 계산
 	var sql5 = 'update 선거정보 set 투표율=투표수/? where 선거회차=?'; // 선거의 투표율 계산
+	var sql6 = 'update 학생투표참여 set 투표여부=1 where 선거회차=? and 학번=?';
 	con.query(sql,params,function(err,result,fields) {
 		if(err) throw err;
 		else { // 후보자의 득표수 1 증가 성공
@@ -82,7 +103,13 @@ router.put("/", function(req, res, next) {
 									var params3 = [stunum,voteid,candid];
 									con.query(sql5, params3, function(err, result, fields) {
 										if(err) throw err;
-										else res.send({status:"success"});
+										else {
+											var params4 = [voteid, stuid];
+											con.query(sql6, params4, function(err, result, fields) {
+												if(err) throw err;
+												else res.send({status:"success"});
+											});
+										}
 									});
 								}
 							});
