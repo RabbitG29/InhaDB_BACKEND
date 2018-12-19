@@ -44,4 +44,33 @@ router.get("/", function(req, res, next) {
 	});
 });
 
+router.get("/exp/:id", function(req,res,next) {
+	console.log("mypage");
+	var id = req.params.id;
+	var sql = 'select * from 이력 where 학번=?';
+	con.query(sql, id, function(err, result, fields) {
+		if(err) throw err;
+		else {
+			res.send({
+				status: "success",
+				result: result
+			});
+		}
+	});
+});
+
+router.get("/name/:id", function(req,res,next) {
+	var id = req.params.id;
+	var sql = 'select 이름 from 학생 where 학번=?';
+	con.query(sql, id, function(err, result, fields) {
+		if(err) throw err;
+		else {
+			res.send({
+				status: "success",
+				result: result[0].이름
+			});
+		}
+	});
+});
+
 module.exports = router;

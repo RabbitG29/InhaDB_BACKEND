@@ -84,40 +84,63 @@ router.put("/", function(req, res, next) {
 	var sql4 = 'update 득표정보 set 득표율=득표수/? where 선거회차=? and 기호=?'; // 후보의 득표율 계산
 	var sql5 = 'update 선거정보 set 투표율=투표수/? where 선거회차=?'; // 선거의 투표율 계산
 	var sql6 = 'update 학생투표참여 set 투표여부=1 where 선거회차=? and 학번=?';
-	con.query(sql,params,function(err,result,fields) {
-		if(err) throw err;
-		else { // 후보자의 득표수 1 증가 성공
-			con.query(sql2,voteid,function(err,result,fields) {
-				if(err) throw err;
-				else { // 투표수까지 1 증가 성공
-					con.query(sql3,voteid,function(err,result,fields) {
-						if(err) throw err;
-						else { // 투표수랑 학생수 받아옴
-							var votenum = result[0].투표수,
-							stunum = result[0].학생수;
-							console.log(votenum+", "+stunum);
-							var params2 = [votenum,voteid,candid];
-							con.query(sql4, params2, function(err, result, fields) {
-								if(err) throw err; 
-								else { // 후보의 득표율 update 완료
-									var params3 = [stunum,voteid,candid];
-									con.query(sql5, params3, function(err, result, fields) {
-										if(err) throw err;
-										else {
-											var params4 = [voteid, stuid];
-											con.query(sql6, params4, function(err, result, fields) {
-												if(err) throw err;
-												else res.send({status:"success"});
-											});
-										}
-									});
-								}
-							});
-						}
-					});
-				}
-			});
-		}
+	con.beginTransaction(function(err) {//트랜잭션 시작, 오류날 경우 rollback으로 원래대로 돌림, 제대로 될 경우 commit	
+		con.query(sql,params,function(err,result,fields) {
+			if(err) {
+				con.rollback();
+				throw err;
+			}
+			else { // 후보자의 득표수 1 증가 성공
+				con.query(sql2,voteid,function(err,result,fields) {
+					if(err) {
+						con.rollback();
+						throw err;
+					}
+					else { // 투표수까지 1 증가 성공
+						con.query(sql3,voteid,function(err,result,fields) {
+							if(err) {
+								con.rollback();
+								throw err;
+							}
+							else { // 투표수랑 학생수 받아옴
+								var votenum = result[0].투표수,
+								stunum = result[0].학생수;
+								console.log(votenum+", "+stunum);
+								var params2 = [votenum,voteid,candid];
+								con.query(sql4, params2, function(err, result, fields) {
+									if(err) {
+										con.rollback();
+										throw err;
+									}
+									else { // 후보의 득표율 update 완료
+										var params3 = [stunum,voteid,candid];
+										con.query(sql5, params3, function(err, result, fields) {
+											if(err) {
+												con.rollback();
+												throw err;
+											}
+											else { // 투표율 계산하여 적용  완료
+												var params4 = [voteid, stuid];
+												con.query(sql6, params4, function(err, result, fields) {
+													if(err) {
+														con.rollback();
+														throw err;
+													}
+													else {//투표여부 update 완료
+														con.commit(); // 트랜잭션 완료
+														res.send({status:"success"});
+													}
+												});
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+		});
 	});
 });
 router.use('/winnerInfo',winnerInfo);
