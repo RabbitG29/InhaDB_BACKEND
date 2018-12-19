@@ -1,7 +1,7 @@
 const express = require('express');
 const con = require('../../connection');
 const router = express.Router();
-
+//해당 선거의 모든 후보
 router.get('/:voteid', (req,res,next)=> {
    var voteid=req.params.voteid;
    console.log("candinfo")
@@ -16,7 +16,7 @@ router.get('/:voteid', (req,res,next)=> {
       }
    });
 });
-
+//해당 후보의 정보 및 공약
 router.get('/:vote_num/:candi_num', (req, res, next)=>{
 	var vote_num = req.params.vote_num;
 			candi_num = req.params.candi_num;
@@ -42,7 +42,7 @@ router.get('/:vote_num/:candi_num', (req, res, next)=>{
 		});
 	});
 });
-
+//후보 등록
 router.post('/register',(req,res,next)=>{
 	console.log('regitser');
 	var information=req.body;
@@ -63,5 +63,39 @@ router.post('/register',(req,res,next)=>{
 		}
 	});
 });
+//득표 순위 계산
+router.put('/rank',(req,res,next)=>{
+	console.log("rank");
+	var information=req.body;
+	var voteid = information.voteid;
+	console.log(voteid);
+	var sql = 'select count(*)+1 as 순위 from 득표정보 where 선거회차=? and 득표수 > (select 득표수 from 득표정보 where 선거회차=? and 기호=?)';
+	var sql2 = 'update 득표정보 set 득표순위=? where 선거회차=? and 기호=?';
+	var sql3 = 'select count(*) as 후보수 from 득표정보 where 선거회차=?';
+	con.query(sql3, voteid, function(err, result, fields) {
+		if(err) throw err;
+		else {
+			var num=result[0].후보수;
+			console.log("num : "+num);
+			for(var i=1;i<=num;i++) {
+				var params = [voteid, voteid, i];
+				console.log(i);
+				var j=0;
+				con.query(sql, params, function(err, result, fields) {
+					if(err) throw err
+					else {
+						var rank = result[0].순위;
+						console.log(rank);
+						j++;
+						var params2 = [rank,voteid,j];
+						console.log(params2);	
+						con.query(sql2,params2);
+					}
+				});
+			}
+			res.send({status:"success"});
+		}
+	});
 
+});
 module.exports = router;
